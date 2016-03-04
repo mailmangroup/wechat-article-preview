@@ -81,6 +81,8 @@
 
 	function articlePreview ( options ) {
 
+		var $this = this;
+
 		this.el = document.createElement( 'iframe' );
 		this.el.id = 'article-preview';
 		this.el.style.border = 'none';
@@ -182,44 +184,43 @@
 		this.articleReport = createElement( 'p', 'article-report rich_media_meta rich_media_meta_text', this.articleMetaData );
 		this.clearFix = createElement( 'div', 'clearfix', this.articleMetaData );
 
+		this.el.addEventListener( 'load', function ( e ) {
+
+			// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
+			// ===============================================================
+			if ( !( $this.previous ) ) {
+
+				$this.el.contentWindow.document.open();
+				$this.el.contentWindow.document.write( '<!DOCTYPE html>' );
+				$this.el.contentWindow.document.write( '<html>' );
+				$this.el.contentWindow.document.write( '<head><meta charset="utf-8"></head>' );
+				$this.el.contentWindow.document.write( '<body></body>' );
+				$this.el.contentWindow.document.write( '</html>' );
+				$this.el.contentWindow.document.close();
+
+			}
+
+			// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
+			if ( !( $this.mainWrapper.parentNode ) ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
+
+			// ADD CSS TO IFRAME HEAD
+			if ( !cssFile ) {
+
+				var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
+					cssFile = 'http://mailmangroup.github.io/wechat-article-preview/dist/preview.css';
+
+					var cssFileEl = document.createElement( 'link' );
+
+					cssFileEl.rel = 'stylesheet';
+					cssFileEl.type = 'text/css';
+					cssFileEl.href = cssFile;
+
+					head.appendChild( cssFileEl );
+			}
+
+		});
+
 		this.generate = function ( content ) {
-
-			var $this = this;
-
-			this.el.addEventListener( 'load', function ( e ) {
-
-				// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
-				// ===============================================================
-				if ( !( $this.previous ) ) {
-
-					$this.el.contentWindow.document.open();
-					$this.el.contentWindow.document.write( '<!DOCTYPE html>' );
-					$this.el.contentWindow.document.write( '<html>' );
-					$this.el.contentWindow.document.write( '<head><meta charset="utf-8"></head>' );
-					$this.el.contentWindow.document.write( '<body></body>' );
-					$this.el.contentWindow.document.write( '</html>' );
-					$this.el.contentWindow.document.close();
-
-				}
-
-				// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
-				if ( !( $this.mainWrapper.parentNode ) ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
-
-				// ADD CSS TO IFRAME HEAD
-				if ( !cssFile ) {
-					var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
-						cssFile = 'http://mailmangroup.github.io/wechat-article-preview/dist/preview.css';
-
-						var cssFileEl = document.createElement( 'link' );
-
-						cssFileEl.rel = 'stylesheet';
-						cssFileEl.type = 'text/css';
-						cssFileEl.href = cssFile;
-
-						head.appendChild( cssFileEl );
-				}
-
-			});
 
 			// IF NO PREVIOUS VALUES ARE SET › SET DEFAULTS › OVERRIDE WITH USER SET VALUES
 			if ( !this.previous ){
