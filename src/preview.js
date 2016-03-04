@@ -184,36 +184,42 @@
 
 		this.generate = function ( content ) {
 
-			// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
-			// ===============================================================
-			if ( !this.previous ) {
+			var $this = this;
 
-				this.el.contentWindow.document.open();
-				this.el.contentWindow.document.write( '<!DOCTYPE html>' );
-				this.el.contentWindow.document.write( '<html>' );
-				this.el.contentWindow.document.write( '<head><meta charset="utf-8"></head>' );
-				this.el.contentWindow.document.write( '<body></body>' );
-				this.el.contentWindow.document.write( '</html>' );
-				this.el.contentWindow.document.close();
+			this.el.addEventListener( 'load', function ( e ) {
 
-			}
+				// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
+				// ===============================================================
+				if ( !( $this.previous ) ) {
 
-			// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
-			if ( !this.mainWrapper.parentNode ) this.el.contentWindow.document.body.appendChild( this.mainWrapper );
+					$this.el.contentWindow.document.open();
+					$this.el.contentWindow.document.write( '<!DOCTYPE html>' );
+					$this.el.contentWindow.document.write( '<html>' );
+					$this.el.contentWindow.document.write( '<head><meta charset="utf-8"></head>' );
+					$this.el.contentWindow.document.write( '<body></body>' );
+					$this.el.contentWindow.document.write( '</html>' );
+					$this.el.contentWindow.document.close();
 
-			// ADD CSS TO IFRAME HEAD
-			if ( !cssFile ) {
-				var head = this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
-					cssFile = './src/preview.css';
+				}
 
-					var cssFileEl = document.createElement( 'link' );
+				// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
+				if ( !( $this.mainWrapper.parentNode ) ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
 
-					cssFileEl.rel = 'stylesheet';
-					cssFileEl.type = 'text/css';
-					cssFileEl.href = cssFile;
+				// ADD CSS TO IFRAME HEAD
+				if ( !cssFile ) {
+					var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
+						cssFile = 'http://mailmangroup.github.io/wechat-article-preview/dist/preview.css';
 
-					head.appendChild( cssFileEl );
-			}
+						var cssFileEl = document.createElement( 'link' );
+
+						cssFileEl.rel = 'stylesheet';
+						cssFileEl.type = 'text/css';
+						cssFileEl.href = cssFile;
+
+						head.appendChild( cssFileEl );
+				}
+
+			});
 
 			// IF NO PREVIOUS VALUES ARE SET › SET DEFAULTS › OVERRIDE WITH USER SET VALUES
 			if ( !this.previous ){
