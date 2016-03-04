@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<style>
+		body{ margin: 0;}
+	</style>
+</head>
+
+<body></body>
+
+<script src="./dist/preview.js"></script>
+
+<script>
+
+	var article = new articlePreview( { container: { width: '100%', height: '100%' } } );
+
+	document.body.appendChild( article.el );
+
+	article.generate();
+
+	article.el.style.position = 'absolute';
+
+</script>
+
+</html>

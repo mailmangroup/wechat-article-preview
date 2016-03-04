@@ -1,6 +1,6 @@
 {
   "name": "wechat-article-preview",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/preview.js",
   "license": "MIT",
   "ignore": [
@@ -11,6 +11,7 @@
     "node_modules",
     "bower.json",
     "**/*.html",
-    "gulpfile.js"
+    "gulpfile.js",
+    "package.json"
   ]
 }
