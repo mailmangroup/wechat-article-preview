@@ -1,5 +1,5 @@
 # WeChat Article Preview
-[![wechat-article-preview version](https://img.shields.io/badge/wechat--article--preview-v1.0.1-brightgreen.svg)](https://github.com/mailmangroup/wechat-article-preview/) [![License](http://img.shields.io/badge/License-MIT-blue.svg)](http://opensource.org/licenses/MIT)
+[![wechat-article-preview version](https://img.shields.io/badge/wechat--article--preview-v1.0.2-brightgreen.svg)](https://github.com/mailmangroup/wechat-article-preview/) [![License](http://img.shields.io/badge/License-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 
 ## Installation
