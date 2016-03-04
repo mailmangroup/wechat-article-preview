@@ -1,14 +1,3 @@
-
 .DS_Store
-public/
-
-npm-debug.log
-tmp/
 node_modules
-bower_components
 dist/
-demo
-app/styles/kawo.css
-.idea
-dashboard-dist/
-grunt-user-config.json
