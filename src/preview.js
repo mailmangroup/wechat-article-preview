@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.3
+ * Version: 1.0.4
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -201,7 +201,7 @@
 			}
 
 			// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
-			if ( !( $this.mainWrapper.parentNode ) ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
+			if ( !( $this.mainWrapper.parentNode ) || $this.mainWrapper.parentNode !== $this.el.contentWindow.document.body ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
 
 			// ADD CSS TO IFRAME HEAD
 			if ( !cssFile ) {
