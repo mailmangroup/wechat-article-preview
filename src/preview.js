@@ -245,12 +245,24 @@
 
 			// SET CONTENT OF MAIN ELEMENTS
 			// ===============================================================
-			if ( !this.previous || this.previous.articleTitle != content.articleTitle ) this.articleTitleEl.innerHTML = content.articleTitle;
+			if ( ( this.previous && this.previous.articleTitle !== content.articleTitle ) && content.articleTitle ) this.articleTitleEl.innerHTML = content.articleTitle;
+			else this.articleTitleEl.innerHTML = '输入标题';
 
 			// ARTICLE TOP META DATA
-			if ( !this.previous || this.previous.accountName != content.accountName ) this.accountNameEl.innerHTML = content.accountName;
-			if ( !this.previous || this.previous.articleAuthor != content.articleAuthor ) this.articleAuthorEl.innerHTML = content.articleAuthor;
-			if ( !this.previous || this.previous.accountName != content.accountName ) this.accountNameSpan.innerHTML = content.accountName;
+			if ( ( this.previous && this.previous.accountName !== content.accountName ) && content.accountName ) {
+
+				this.accountNameSpan.innerHTML = content.accountName;
+				this.accountNameEl.innerHTML = content.accountName;
+
+			} else {
+
+				this.accountNameSpan.innerHTML = '账户名称';
+				this.accountNameEl.innerHTML = '账户名称';
+
+			}
+
+			if ( ( this.previous && this.previous.articleAuthor !== content.articleAuthor ) && content.articleAuthor ) this.articleAuthorEl.innerHTML = content.articleAuthor;
+			else this.articleAuthorEl.innerHTML = '';
 
 			// META DATA
 			if ( !this.previous || this.previous.articlePageviews != content.articlePageviews ) this.articlePageviews.innerHTML = '阅读 ' + content.pageViews;
