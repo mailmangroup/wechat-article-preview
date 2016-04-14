@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.4
+ * Version: 1.0.5
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -248,9 +248,9 @@
 			if ( !this.previous || this.previous.articleTitle != content.articleTitle ) this.articleTitleEl.innerHTML = content.articleTitle;
 
 			// ARTICLE TOP META DATA
-			if ( !this.previous || this.previous.accountNameEl != content.accountNameEl ) this.accountNameEl.innerHTML = content.accountName;
-			if ( !this.previous || this.previous.articleAuthorEl != content.articleAuthorEl ) this.articleAuthorEl.innerHTML = content.articleAuthor;
-			if ( !this.previous || this.previous.accountNameSpan != content.accountNameSpan ) this.accountNameSpan.innerHTML = content.accountName;
+			if ( !this.previous || this.previous.accountName != content.accountName ) this.accountNameEl.innerHTML = content.accountName;
+			if ( !this.previous || this.previous.articleAuthor != content.articleAuthor ) this.articleAuthorEl.innerHTML = content.articleAuthor;
+			if ( !this.previous || this.previous.accountName != content.accountName ) this.accountNameSpan.innerHTML = content.accountName;
 
 			// META DATA
 			if ( !this.previous || this.previous.articlePageviews != content.articlePageviews ) this.articlePageviews.innerHTML = '阅读 ' + content.pageViews;
