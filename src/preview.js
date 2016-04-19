@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.6
+ * Version: 1.0.8
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -245,29 +245,43 @@
 
 			// SET CONTENT OF MAIN ELEMENTS
 			// ===============================================================
-			if ( ( this.previous && this.previous.articleTitle !== content.articleTitle ) && content.articleTitle ) this.articleTitleEl.innerHTML = content.articleTitle;
-			else this.articleTitleEl.innerHTML = '输入标题';
+			if ( content.articleTitle && ( !this.previous || this.previous.articleTitle !== content.articleTitle ) )
+				this.articleTitleEl.innerHTML = content.articleTitle;
+
+			else if ( !content.articleTitle ) this.articleTitleEl.innerHTML = '输入标题';
 
 			// ARTICLE TOP META DATA
-			if ( ( this.previous && this.previous.accountName !== content.accountName ) && content.accountName ) {
+			if ( content.accountName && ( !this.previous || this.previous.accountName !== content.accountName ) ) {
 
 				this.accountNameSpan.innerHTML = content.accountName;
 				this.accountNameEl.innerHTML = content.accountName;
 
-			} else {
+			} else if ( !content.accountName ) {
 
 				this.accountNameSpan.innerHTML = '账户名称';
 				this.accountNameEl.innerHTML = '账户名称';
 
 			}
 
-			if ( ( this.previous && this.previous.articleAuthor !== content.articleAuthor ) && content.articleAuthor ) this.articleAuthorEl.innerHTML = content.articleAuthor;
-			else this.articleAuthorEl.innerHTML = '';
+			if ( content.articleAuthor && ( !this.previous || this.previous.articleAuthor !== content.articleAuthor ) )
+				this.articleAuthorEl.innerHTML = content.articleAuthor;
+
+			else if ( !content.articleAuthor ) this.articleAuthorEl.innerHTML = '';
 
 			// META DATA
-			if ( !this.previous || this.previous.articlePageviews != content.articlePageviews ) this.articlePageviews.innerHTML = '阅读 ' + content.pageViews;
-			if ( !this.previous || this.previous.articleLikes != content.articleLikes ) this.articleLikes.innerHTML = content.pageLikes;
+			// PAGEVIEWS
+			if ( content.pageViews && ( !this.previous || this.previous.pageViews !== content.pageViews ) )
+				this.articlePageviews.innerHTML = '阅读 ' + content.pageViews;
 
+			else if ( !content.pageViews ) this.articlePageviews.innerHTML = '阅读 0';
+
+			// LIKES
+			if ( content.pageLikes && ( !this.previous || this.previous.pageLikes !== content.pageLikes ) )
+				this.articleLikes.innerHTML = content.pageLikes;
+
+			else if ( !content.pageLikes ) this.articleLikes.innerHTML = 0;
+
+			// READ MORE
 			if ( content.readMore ) {
 
 				this.readMoreEl.innerHTML = '阅读原文';
@@ -279,7 +293,8 @@
 			if ( !this.articleReport.innerHTML ) this.articleReport.innerHTML = '举报';
 
 			// MAIN CONTENT
-			this.contentWrapper.innerHTML = content.html;
+			if ( content.html && ( !this.previous || this.previous.html !== content.html ) )
+				this.contentWrapper.innerHTML = content.html;
 
 			// FORMAT VIDEO IFRAMES
 			// ===============================================================
@@ -305,18 +320,14 @@
 
 			// FORMAT DATE
 			// ===============================================================
-			var date = new Date( content.articleTime ),
+			var date = ( typeof content.articleTime === 'number' ? new Date( Number( content.articleTime ) ) : new Date( Date.now() ) ),
 				day = date.getDate(),
 				month = date.getMonth() + 1,
 				year = date.getFullYear();
 
-			if ( day <= 9 ) {
-				day = '0' + day;
-			}
+			if ( day <= 9 ) day = '0' + day;
 
-			if ( month <= 9 ) {
-				month = '0' + month;
-			}
+			if ( month <= 9 ) month = '0' + month;
 
 			content.articleTime = year + '-' + month + '-' + day;
 
