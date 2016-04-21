@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.8
+ * Version: 1.0.9
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -286,6 +286,9 @@
 
 				this.readMoreEl.innerHTML = '阅读原文';
 				this.readMoreEl.setAttribute( 'target', '_blank' );
+
+				if ( /^(http:\/\/){1,7}\S+/.test( content.readMore ) === false ) content.readMore = 'http://' + content.readMore;
+
 				this.readMoreEl.setAttribute( 'href', content.readMore );
 
 			} else this.readMoreEl.innerHTML = '';
@@ -317,6 +320,7 @@
 					}
 
 			}
+
 
 			// FORMAT DATE
 			// ===============================================================
@@ -351,6 +355,68 @@
 				}
 
 			}
+
+			// DISPLAY ERROR FOR POLL IFRAMES
+			// ===============================================================
+			var polls = this.contentWrapper.getElementsByClassName( 'vote_iframe' );
+
+			for ( var i = 0; i < polls.length; i++ ) {
+
+				var poll = polls[ i ];
+
+				// REMOVE SOURCE ATTRIBUTE
+				poll.removeAttribute( 'src' );
+
+				// IF IFRAME HAS A DATA-DISPLAY-STYLE ATTRIBUTE › SET STYLE TO THAT ATTRIBUTE
+				if ( poll.getAttribute( 'data-display-style' ) )
+					poll.setAttribute( 'style', poll.getAttribute( 'data-display-style' ) );
+
+				if ( poll.classList.contains( 'vote_iframe' ) && poll.contentDocument ) {
+
+					// CREATE NOTIFICATION THAT POLL WONT BE LOADED
+					poll.addEventListener( 'load', function () {
+
+						// EMPTY IFRAME › CREATE ELEMENTS
+						if ( poll.contentDocument.body.children.length === 0 ) {
+
+							// CREATE ELEMENTS
+							var notAvailableEl = document.createElement( 'div' ),
+								notAvailableNode = document.createElement( 'p' );
+
+							poll.contentDocument.body.style.margin = '0';
+
+							// STYLING FOR PARENT
+							notAvailableEl.classList.add( 'fn-not-available' );
+							notAvailableEl.style.backgroundColor = '#F2F2F2';
+							notAvailableEl.style.position = 'absolute';
+							notAvailableEl.style.height = '100%';
+							notAvailableEl.style.width = '100%';
+							notAvailableEl.style.top = '0';
+							notAvailableEl.style.left = '0';
+
+							// STYLING FOR TEXT
+							notAvailableNode.style.position = 'absolute';
+							notAvailableNode.style.left = '50%';
+							notAvailableNode.style.top = '50%';
+							notAvailableNode.style.transform = 'translate( -50%, -50% )';
+							notAvailableNode.style.margin = '0';
+							notAvailableNode.style.fontFamily = "'Open Sans', Helvetica, sans-serif";
+
+							// WARNING TEXT
+							notAvailableNode.innerHTML = 'Poll preview not available.';
+
+							// APPEND ELEMENTS
+							notAvailableEl.appendChild( notAvailableNode );
+							poll.contentDocument.body.appendChild( notAvailableEl );
+
+						}
+
+					});
+
+				}
+
+			}
+
 
 			this.previous = content;
 
