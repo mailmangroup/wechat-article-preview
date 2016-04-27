@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.9
+ * Version: 1.0.10
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -298,6 +298,8 @@
 			// MAIN CONTENT
 			if ( content.html && ( !this.previous || this.previous.html !== content.html ) )
 				this.contentWrapper.innerHTML = content.html;
+
+			else if ( !content.html || content.html === '' ) this.contentWrapper.innerHTML = '开始写作';
 
 			// FORMAT VIDEO IFRAMES
 			// ===============================================================

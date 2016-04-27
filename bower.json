@@ -1,6 +1,6 @@
 {
   "name": "wechat-article-preview",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "dist/preview.js",
   "license": "MIT",
   "ignore": [
