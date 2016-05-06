@@ -47,10 +47,15 @@
 	width: 13px;
 	height: 13px;
 	display: inline-block;
-    margin: 0 3px 2px 0.625em;
+    margin: 10px 3px 2px 0.625em;
 }
 
-.article-report {
+.rich_media_tool .rich_media_meta,
+.rich_media_tool .article-like-icon {
+	float: left;
+}
+
+.rich_media_tool .article-report {
 	float: right;
 	margin-right: 0;
 	margin-bottom: 2px;
