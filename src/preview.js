@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.10
+ * Version: 1.0.12
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -100,6 +100,8 @@
 		var options = extend({
 			container: 'iphone4'
 		}, options);
+
+		this.cssFilePath = options.cssFilePath;
 
 		// IF CONTAINER IS AN OBJECT > OBJECT VALUES MUST BE HEIGHT AND WIDTH
 		// ===========================================================================
@@ -207,7 +209,7 @@
 			if ( !cssFile ) {
 
 				var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
-					cssFile = 'http://mailmangroup.github.io/wechat-article-preview/dist/preview.css';
+					cssFile = $this.cssFilePath || '//mailmangroup.github.io/wechat-article-preview/dist/preview.css';
 
 					var cssFileEl = document.createElement( 'link' );
 
