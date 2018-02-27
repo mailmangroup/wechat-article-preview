@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.12
+ * Version: 1.0.13
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -102,6 +102,7 @@
 		}, options);
 
 		this.cssFilePath = options.cssFilePath;
+		this.cssText = options.cssText;
 
 		// IF CONTAINER IS AN OBJECT > OBJECT VALUES MUST BE HEIGHT AND WIDTH
 		// ===========================================================================
@@ -146,45 +147,53 @@
 		// MEDIA PRIMARY
 		this.mediaAreaPrimary = createElement( 'div', 'rich_media_area_primary', this.pageContent );
 
-		// ARTICLE TITLE
-		this.articleTitleEl = createElement( 'h2', 'rich_media_title', this.mediaAreaPrimary );
+		if ( !options.onlyContent ) {
 
-		// ARTICLE META LIST
-		this.articleMetaList = createElement( 'div', 'rich_media_meta_list', this.mediaAreaPrimary );
+			// ARTICLE TITLE
+			this.articleTitleEl = createElement( 'h2', 'rich_media_title', this.mediaAreaPrimary );
 
-		// ARTICLE DATE
-		this.articleDateEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
+			// ARTICLE META LIST
+			this.articleMetaList = createElement( 'div', 'rich_media_meta_list', this.mediaAreaPrimary );
 
-		// ARTICLE AUTHOR
-		this.articleAuthorEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
+			// ARTICLE DATE
+			this.articleDateEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
 
-		// ACCOUNT NAME LINK
-		this.accountNameEl = createElement( 'em', 'rich_media_meta rich_media_meta_link rich_media_meta_nickname', this.articleMetaList );
+			// ARTICLE AUTHOR
+			this.articleAuthorEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
 
-		// ACCOUNT NAME SPAN
-		this.accountNameSpan = createElement( 'span', 'rich_media_meta rich_media_meta_text rich_media_meta_nickname', this.articleMetaList );
+			// ACCOUNT NAME LINK
+			this.accountNameEl = createElement( 'em', 'rich_media_meta rich_media_meta_link rich_media_meta_nickname', this.articleMetaList );
+
+			// ACCOUNT NAME SPAN
+			this.accountNameSpan = createElement( 'span', 'rich_media_meta rich_media_meta_text rich_media_meta_nickname', this.articleMetaList );
+
+		}
 
 		// CONTENT WRAPPER
 		this.contentWrapper = createElement( 'div', 'rich_media_content ', this.mediaAreaPrimary );
 
-		// META DATA WRAPPER
-		this.articleMetaData = createElement( 'div', 'rich_media_tool', this.mediaAreaPrimary );
+		if ( !options.onlyContent ) {
 
-		// META READ MORE
-		this.readMoreEl = createElement( 'a', 'rich_media_meta', this.articleMetaData );
+			// META DATA WRAPPER
+			this.articleMetaData = createElement( 'div', 'rich_media_tool', this.mediaAreaPrimary );
 
-		// META PAGEVIEWS
-		this.articlePageviews = createElement( 'p', 'rich_media_meta rich_media_meta_text', this.articleMetaData );
+			// META READ MORE
+			this.readMoreEl = createElement( 'a', 'rich_media_meta', this.articleMetaData );
 
-		// META LIKES ICON
-		this.articleLikesIcon = createElement( 'i', 'article-like-icon', this.articleMetaData );
+			// META PAGEVIEWS
+			this.articlePageviews = createElement( 'p', 'rich_media_meta rich_media_meta_text', this.articleMetaData );
 
-		// META LIKES
-		this.articleLikes = createElement( 'p', 'article-likes rich_media_meta rich_media_meta_text', this.articleMetaData );
+			// META LIKES ICON
+			this.articleLikesIcon = createElement( 'i', 'article-like-icon', this.articleMetaData );
 
-		// META REPORT OPTION
-		this.articleReport = createElement( 'p', 'article-report rich_media_meta rich_media_meta_text', this.articleMetaData );
-		this.clearFix = createElement( 'div', 'clearfix', this.articleMetaData );
+			// META LIKES
+			this.articleLikes = createElement( 'p', 'article-likes rich_media_meta rich_media_meta_text', this.articleMetaData );
+
+			// META REPORT OPTION
+			this.articleReport = createElement( 'p', 'article-report rich_media_meta rich_media_meta_text', this.articleMetaData );
+			this.clearFix = createElement( 'div', 'clearfix', this.articleMetaData );
+
+		}
 
 		this.el.addEventListener( 'load', function ( e ) {
 
@@ -200,24 +209,36 @@
 				$this.el.contentWindow.document.write( '</html>' );
 				$this.el.contentWindow.document.close();
 
+				if ( parseInt( $this.el.style.width ) >= 375 )
+					$this.el.contentWindow.document.body.className = 'article-preview-large-device';
 			}
 
 			// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
 			if ( !( $this.mainWrapper.parentNode ) || $this.mainWrapper.parentNode !== $this.el.contentWindow.document.body ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
 
 			// ADD CSS TO IFRAME HEAD
-			if ( !cssFile ) {
+			if ( !style ) {
 
 				var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
 					cssFile = $this.cssFilePath || '//mailmangroup.github.io/wechat-article-preview/dist/preview.css';
 
-					var cssFileEl = document.createElement( 'link' );
+					var style;
 
-					cssFileEl.rel = 'stylesheet';
-					cssFileEl.type = 'text/css';
-					cssFileEl.href = cssFile;
+					if ( $this.cssText ) {
 
-					head.appendChild( cssFileEl );
+						style = document.createElement( 'style' );
+						style.innerHTML = $this.cssText;
+
+					} else {
+
+						style = document.createElement( 'link' );
+
+						style.rel = 'stylesheet';
+						style.type = 'text/css';
+						style.href = cssFile;
+					}
+
+					head.appendChild( style );
 			}
 
 		});
@@ -225,25 +246,39 @@
 		this.generate = function ( content ) {
 
 			// IF NO PREVIOUS VALUES ARE SET › SET DEFAULTS › OVERRIDE WITH USER SET VALUES
-			if ( !this.previous ){
+			if ( !this.previous ) {
 
-				var content = extend({
-						articleTitle: '输入标题',
-						articleTime: Date.now(),
-						articleAuthor: null,
-						accountName: '账户名称',
-						html: '开始写作',
-						pageViews: 0,
-						pageLikes: 0,
-						readMore: false
-					}, content );
+				content = extend({
+					articleTitle: '输入标题',
+					articleTime: Date.now(),
+					articleAuthor: null,
+					accountName: '账户名称',
+					html: '开始写作',
+					pageViews: 0,
+					pageLikes: 0,
+					readMore: false
+				}, content );
 
 			} else {
 
 				// IF PREVIOUS VALUES ARE SET > EXTEND TO POST
-				var content = extend( this.previous, content );
-
+				content = extend( this.previous, content );
 			}
+
+			// MAIN CONTENT
+			if ( content.html && ( !this.previous || this.previous.html !== content.html ) )
+				this.contentWrapper.innerHTML = content.html;
+
+			else if ( !content.html || content.html === '' ) this.contentWrapper.innerHTML = '开始写作';
+
+			// FORMAT IMAGES, IFRAMES, ETC.
+			this.formatContent();
+
+			if ( options.onlyContent ) {
+				this.previous = content;
+				return;
+			}
+
 
 			// SET CONTENT OF MAIN ELEMENTS
 			// ===============================================================
@@ -297,35 +332,6 @@
 
 			if ( !this.articleReport.innerHTML ) this.articleReport.innerHTML = '举报';
 
-			// MAIN CONTENT
-			if ( content.html && ( !this.previous || this.previous.html !== content.html ) )
-				this.contentWrapper.innerHTML = content.html;
-
-			else if ( !content.html || content.html === '' ) this.contentWrapper.innerHTML = '开始写作';
-
-			// FORMAT VIDEO IFRAMES
-			// ===============================================================
-			var videoIframe = this.contentWrapper.getElementsByClassName( 'video_iframe' );
-
-			for ( var i = 0; i < videoIframe.length; i++ ) {
-
-				var videoMeta = createElement( 'div', 'video-description' ),
-					videoSource = videoIframe[ i ].getAttribute( 'data-src' );
-
-					videoIframe[ i ].parentNode.insertBefore( videoMeta, videoIframe[ i ].nextSibling );
-
-					// MATCH WITH TENCENT VIDEO
-					if ( videoSource ) {
-
-						var tencent = videoSource.match( /(http|https):\/\/(\w+:{0,1}\w*@)?((v\.qq)+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/g )
-
-						if ( tencent ) videoMeta.innerHTML = '腾讯视频';
-
-					}
-
-			}
-
-
 			// FORMAT DATE
 			// ===============================================================
 			var date = ( typeof content.articleTime === 'number' ? new Date( Number( content.articleTime ) ) : new Date( Date.now() ) ),
@@ -340,6 +346,33 @@
 			content.articleTime = year + '-' + month + '-' + day;
 
 			this.articleDateEl.innerHTML = content.articleTime;
+
+			this.previous = content;
+		};
+
+		this.formatContent = function() {
+
+			// FORMAT VIDEO IFRAMES
+			// ===============================================================
+			var videoIframe = this.contentWrapper.getElementsByClassName( 'video_iframe' );
+
+			for ( var i = 0; i < videoIframe.length; i++ ) {
+
+				var videoMeta = createElement( 'div', 'video-description' ),
+					videoSource = videoIframe[ i ].getAttribute( 'data-src' );
+
+				videoIframe[ i ].parentNode.insertBefore( videoMeta, videoIframe[ i ].nextSibling );
+
+				// MATCH WITH TENCENT VIDEO
+				if ( videoSource ) {
+
+					var tencent = videoSource.match( /(http|https):\/\/(\w+:{0,1}\w*@)?((v\.qq)+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/g )
+
+					if ( tencent ) videoMeta.innerHTML = '腾讯视频';
+
+				}
+
+			}
 
 			// SET SOURCES FOR IMAGES AND YOUKU LINKS
 			// ===============================================================
@@ -421,11 +454,7 @@
 
 			}
 
-
-			this.previous = content;
-
-		}
-
+		};
 	}
 
 	return articlePreview;

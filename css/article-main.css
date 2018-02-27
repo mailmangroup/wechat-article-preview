@@ -158,6 +158,16 @@ img {
         font-size: 25px
     }
 }
+
+/* MIMIC MIN DEVICE WIDTH AND PIXEL RATIO BASED ON CUSTOM CLASS SET VIA JS DEVICE */
+.article-preview-large-device .rich_media_inner {
+    font-size: 18px;
+}
+
+.article-preview-large-device .rich_media_meta {
+    font-size: 17px;
+}
+
 .radius_avatar {
     display: inline-block;
     background-color: #fff;
