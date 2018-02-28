@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.13
+ * Version: 1.0.14
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -52,18 +52,18 @@
 	// ===============================================================================
 	function extend ( defaults, options ) {
 
-	    var extended = {};
-	    var prop;
+		var extended = {};
+		var prop;
 
-	    for (prop in defaults) {
-	        if (Object.prototype.hasOwnProperty.call(defaults, prop)) extended[prop] = defaults[prop];
-	    }
+		for (prop in defaults) {
+			if (Object.prototype.hasOwnProperty.call(defaults, prop)) extended[prop] = defaults[prop];
+		}
 
-	    for (prop in options) {
-	        if (Object.prototype.hasOwnProperty.call(options, prop)) extended[prop] = options[prop];
-	    }
+		for (prop in options) {
+			if (Object.prototype.hasOwnProperty.call(options, prop)) extended[prop] = options[prop];
+		}
 
-	    return extended;
+		return extended;
 
 	};
 
@@ -122,11 +122,11 @@
 
 		// IF CONTAINER IS AN STRING > SET HEIGHT AND WIDTH ACCORDING TO WHITELIST SIZES
 		// ===========================================================================
-		else if ( typeof options.container == 'string' ) {
+		else if ( typeof options.container === 'string' ) {
 
 			for ( var prop in sizes ) {
 
-				if ( sizes.hasOwnProperty( prop ) && prop == normalizeString( options.container ) ) {
+				if ( sizes.hasOwnProperty( prop ) && prop === normalizeString( options.container ) ) {
 
 					this.el.style.width = sizes[ prop ].width;
 					this.el.style.height = sizes[ prop ].height;
@@ -146,6 +146,21 @@
 
 		// MEDIA PRIMARY
 		this.mediaAreaPrimary = createElement( 'div', 'rich_media_area_primary', this.pageContent );
+
+		var observer = new MutationObserver( function() {
+			$this.updateHeight();
+		});
+
+		observer.observe( this.mediaAreaPrimary, {
+			childList: true,
+			attributes: true,
+			characterData: true,
+			subtree: true
+		});
+
+		window.addEventListener( 'resize', function() {
+			$this.updateHeight();
+		});
 
 		if ( !options.onlyContent ) {
 
@@ -222,24 +237,26 @@
 				var head = $this.el.contentWindow.document.getElementsByTagName( 'head' )[ 0 ],
 					cssFile = $this.cssFilePath || '//mailmangroup.github.io/wechat-article-preview/dist/preview.css';
 
-					var style;
+				var style;
 
-					if ( $this.cssText ) {
+				if ( $this.cssText ) {
 
-						style = document.createElement( 'style' );
-						style.innerHTML = $this.cssText;
+					style = document.createElement( 'style' );
+					style.innerHTML = $this.cssText;
 
-					} else {
+				} else {
 
-						style = document.createElement( 'link' );
+					style = document.createElement( 'link' );
 
-						style.rel = 'stylesheet';
-						style.type = 'text/css';
-						style.href = cssFile;
-					}
+					style.rel = 'stylesheet';
+					style.type = 'text/css';
+					style.href = cssFile;
+				}
 
-					head.appendChild( style );
+				head.appendChild( style );
 			}
+
+			$this.updateHeight();
 
 		});
 
@@ -273,6 +290,7 @@
 
 			// FORMAT IMAGES, IFRAMES, ETC.
 			this.formatContent();
+
 
 			if ( options.onlyContent ) {
 				this.previous = content;
@@ -393,6 +411,39 @@
 
 			}
 
+			// UPDATE DATA-HEIGHT ON IMAGE LOAD
+			// ===============================================================
+			var imageElements = this.contentWrapper.querySelectorAll( 'img' ),
+				imageLoadCount = 0;
+
+			var updateLoadCount = function( e ) {
+
+				// REMEOVE THE EVENT LISTENER
+				e.target.removeEventListener( 'load', updateLoadCount );
+				e.target.removeEventListener( 'error', updateLoadCount );
+
+				imageLoadCount++;
+
+				if ( imageLoadCount === imageElements.length )
+					$this.updateHeight();
+			};
+
+			Array.prototype.forEach.call( imageElements, function( img ) {
+
+				// CHECK TO SEE IF THE IMAGE IS ALREADY LOADED
+				if ( img.complete && img.naturalWidth !== 0 ) imageLoadCount++;
+
+				// OTHERWISE ADD A LISTENER FOR WHEN IT DOES
+				else {
+					img.addEventListener( 'load', updateLoadCount );
+					img.addEventListener( 'error', updateLoadCount );
+				}
+
+				// IF AT THIS STAGE ALL IMAGES ARE LOADED, SET TO STATE AND RENDER
+				if ( imageLoadCount === imageElements.length )
+					$this.updateHeight();
+			});
+
 			// DISPLAY ERROR FOR POLL IFRAMES
 			// ===============================================================
 			var polls = this.contentWrapper.getElementsByClassName( 'vote_iframe' );
@@ -455,6 +506,22 @@
 			}
 
 		};
+
+
+		this.updateHeight = function() {
+
+			var event;
+
+			// IF HEIGHT IS GOING TO CHANGE › DISPATCH EVENT
+			if ( !this.el.getAttribute( 'data-content-height' ) || this.el.getAttribute( 'data-content-height' ) !== this.mainWrapper.offsetHeight.toString() )
+				event = new Event( 'content-height-change' );
+
+			// UPDATE THE HEIGHT
+			this.el.setAttribute( 'data-content-height', this.mainWrapper.offsetHeight.toString() );
+
+			// IF THE HEIGHT CHANGED › DISPATCH AN EVENT
+			if ( event ) this.el.dispatchEvent( event );
+		}
 	}
 
 	return articlePreview;
