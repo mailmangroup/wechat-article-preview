@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.14
+ * Version: 1.0.15
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -49,7 +49,7 @@
 	};
 
 	// EXTEND JAVASCRIPT OBJECT
-	// ===============================================================================
+	// =================================================================================================================
 	function extend ( defaults, options ) {
 
 		var extended = {};
@@ -68,7 +68,7 @@
 	};
 
 	// DECLARE CREATE ELEMENT FUNCTION
-	// ===============================================================================
+	// =================================================================================================================
 	function createElement ( element, className, target ) {
 
 		element = document.createElement( element );
@@ -105,7 +105,7 @@
 		this.cssText = options.cssText;
 
 		// IF CONTAINER IS AN OBJECT > OBJECT VALUES MUST BE HEIGHT AND WIDTH
-		// ===========================================================================
+		// =============================================================================================================
 		if ( typeof options.container === 'object' && options.container.width && options.container.height ) {
 
 			if ( typeof options.container.width === 'number' && typeof options.container.height === 'number' ) {
@@ -121,7 +121,7 @@
 		}
 
 		// IF CONTAINER IS AN STRING > SET HEIGHT AND WIDTH ACCORDING TO WHITELIST SIZES
-		// ===========================================================================
+		// =============================================================================================================
 		else if ( typeof options.container === 'string' ) {
 
 			for ( var prop in sizes ) {
@@ -138,7 +138,7 @@
 		} else throw new TypeError( 'Container object contains invalid values' );
 
 		// GENERATE MAIN BODY WRAPPERS
-		// ===============================================================
+		// =============================================================================================================
 		this.mainWrapper = createElement( 'div', 'rich_media_inner' );
 
 		// PAGE CONTENT
@@ -213,7 +213,7 @@
 		this.el.addEventListener( 'load', function ( e ) {
 
 			// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
-			// ===============================================================
+			// =========================================================================================================
 			if ( !( $this.previous ) ) {
 
 				$this.el.contentWindow.document.open();
@@ -299,7 +299,7 @@
 
 
 			// SET CONTENT OF MAIN ELEMENTS
-			// ===============================================================
+			// =========================================================================================================
 			if ( content.articleTitle && ( !this.previous || this.previous.articleTitle !== content.articleTitle ) )
 				this.articleTitleEl.innerHTML = content.articleTitle;
 
@@ -351,7 +351,7 @@
 			if ( !this.articleReport.innerHTML ) this.articleReport.innerHTML = '举报';
 
 			// FORMAT DATE
-			// ===============================================================
+			// =========================================================================================================
 			var date = ( typeof content.articleTime === 'number' ? new Date( Number( content.articleTime ) ) : new Date( Date.now() ) ),
 				day = date.getDate(),
 				month = date.getMonth() + 1,
@@ -371,7 +371,7 @@
 		this.formatContent = function() {
 
 			// FORMAT VIDEO IFRAMES
-			// ===============================================================
+			// =========================================================================================================
 			var videoIframe = this.contentWrapper.getElementsByClassName( 'video_iframe' );
 
 			for ( var i = 0; i < videoIframe.length; i++ ) {
@@ -393,7 +393,7 @@
 			}
 
 			// SET SOURCES FOR IMAGES AND YOUKU LINKS
-			// ===============================================================
+			// =========================================================================================================
 			var dataSrcElements = this.contentWrapper.querySelectorAll( '[data-src]' );
 
 			for ( var i = 0; i < dataSrcElements.length; i++ ) {
@@ -412,7 +412,7 @@
 			}
 
 			// UPDATE DATA-HEIGHT ON IMAGE LOAD
-			// ===============================================================
+			// =========================================================================================================
 			var imageElements = this.contentWrapper.querySelectorAll( 'img' ),
 				imageLoadCount = 0;
 
@@ -445,7 +445,7 @@
 			});
 
 			// DISPLAY ERROR FOR POLL IFRAMES
-			// ===============================================================
+			// =========================================================================================================
 			var polls = this.contentWrapper.getElementsByClassName( 'vote_iframe' );
 
 			for ( var i = 0; i < polls.length; i++ ) {
@@ -508,19 +508,48 @@
 		};
 
 
+		// =============================================================================================================
 		this.updateHeight = function() {
 
 			var event;
 
-			// IF HEIGHT IS GOING TO CHANGE › DISPATCH EVENT
-			if ( !this.el.getAttribute( 'data-content-height' ) || this.el.getAttribute( 'data-content-height' ) !== this.mainWrapper.offsetHeight.toString() )
-				event = new Event( 'content-height-change' );
+			try {
 
-			// UPDATE THE HEIGHT
-			this.el.setAttribute( 'data-content-height', this.mainWrapper.offsetHeight.toString() );
+				// IF HEIGHT IS GOING TO CHANGE › DISPATCH EVENT
+				if ( !this.el.getAttribute( 'data-content-height' ) || this.el.getAttribute( 'data-content-height' ) !== this.mainWrapper.offsetHeight.toString() )
+					event = new Event( 'content-height-change' );
 
-			// IF THE HEIGHT CHANGED › DISPATCH AN EVENT
-			if ( event ) this.el.dispatchEvent( event );
+				// UPDATE THE HEIGHT
+				this.el.setAttribute( 'data-content-height', this.mainWrapper.offsetHeight.toString() );
+
+				// IF THE HEIGHT CHANGED › DISPATCH AN EVENT
+				if ( event ) this.el.dispatchEvent( event );
+
+			} catch ( e ) {
+
+				if ( typeof window.CustomEvent === "function" ) return false; //If not IE
+
+				var CustomEvent = function ( event, params ) {
+					params = params || { bubbles: false, cancelable: false, detail: undefined };
+					var evt = document.createEvent( 'CustomEvent' );
+					evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+					return evt;
+				};
+
+				CustomEvent.prototype = window.Event.prototype;
+
+				window.CustomEvent = CustomEvent;
+
+				// FIX FOR INTERNET EXPLORER / EDGE
+				if ( !this.el.getAttribute( 'data-content-height' ) || this.el.getAttribute( 'data-content-height' ) !== this.mainWrapper.offsetHeight.toString() )
+					event = CustomEvent( 'content-height-change' );
+
+				// UPDATE THE HEIGHT
+				this.el.setAttribute( 'data-content-height', this.mainWrapper.offsetHeight.toString() );
+
+				if ( event ) this.el.dispatchEvent( event );
+			}
+
 		}
 	}
 
