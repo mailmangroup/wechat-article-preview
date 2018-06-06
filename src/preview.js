@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.15
+ * Version: 1.0.16
  *
  * Real-time preview of articles in WeChat's phone browser
  */
@@ -165,13 +165,10 @@
 		if ( !options.onlyContent ) {
 
 			// ARTICLE TITLE
-			this.articleTitleEl = createElement( 'h2', 'rich_media_title', this.mediaAreaPrimary );
+			this.articleTitleEl = createElement( 'h2', 'rich_media_title rich_media_title_ios', this.mediaAreaPrimary );
 
 			// ARTICLE META LIST
 			this.articleMetaList = createElement( 'div', 'rich_media_meta_list', this.mediaAreaPrimary );
-
-			// ARTICLE DATE
-			this.articleDateEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
 
 			// ARTICLE AUTHOR
 			this.articleAuthorEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
@@ -179,9 +176,8 @@
 			// ACCOUNT NAME LINK
 			this.accountNameEl = createElement( 'em', 'rich_media_meta rich_media_meta_link rich_media_meta_nickname', this.articleMetaList );
 
-			// ACCOUNT NAME SPAN
-			this.accountNameSpan = createElement( 'span', 'rich_media_meta rich_media_meta_text rich_media_meta_nickname', this.articleMetaList );
-
+			// ARTICLE DATE
+			this.articleDateEl = createElement( 'em', 'rich_media_meta rich_media_meta_text', this.articleMetaList );
 		}
 
 		// CONTENT WRAPPER
@@ -193,19 +189,19 @@
 			this.articleMetaData = createElement( 'div', 'rich_media_tool', this.mediaAreaPrimary );
 
 			// META READ MORE
-			this.readMoreEl = createElement( 'a', 'rich_media_meta', this.articleMetaData );
+			this.readMoreEl = createElement( 'a', 'media_tool_meta meta_primary', this.articleMetaData );
 
 			// META PAGEVIEWS
-			this.articlePageviews = createElement( 'p', 'rich_media_meta rich_media_meta_text', this.articleMetaData );
-
-			// META LIKES ICON
-			this.articleLikesIcon = createElement( 'i', 'article-like-icon', this.articleMetaData );
+			this.articlePageviews = createElement( 'div', 'media_tool_meta tips_global_primary meta_primary', this.articleMetaData );
 
 			// META LIKES
-			this.articleLikes = createElement( 'p', 'article-likes rich_media_meta rich_media_meta_text', this.articleMetaData );
+			this.articleLikes = createElement( 'span', 'media_tool_meta meta_extra meta_praise', this.articleMetaData );
 
-			// META REPORT OPTION
-			this.articleReport = createElement( 'p', 'article-report rich_media_meta rich_media_meta_text', this.articleMetaData );
+			// META LIKES ICON
+			this.articleLikesIcon = createElement( 'i', 'icon_praise_gray', this.articleLikes );
+
+			this.articleLikesNum = createElement( 'span', 'praise_num', this.articleLikes );
+
 			this.clearFix = createElement( 'div', 'clearfix', this.articleMetaData );
 
 		}
@@ -225,11 +221,13 @@
 				$this.el.contentWindow.document.close();
 
 				if ( parseInt( $this.el.style.width ) >= 375 )
-					$this.el.contentWindow.document.body.className = 'article-preview-large-device';
+					$this.el.contentWindow.document.body.classList.add( 'article-preview-large-device' );
 			}
 
 			// IF MAIN WRAPPER ISNT APPENDED TO BODY › APPEND IT
 			if ( !( $this.mainWrapper.parentNode ) || $this.mainWrapper.parentNode !== $this.el.contentWindow.document.body ) $this.el.contentWindow.document.body.appendChild( $this.mainWrapper );
+
+			$this.el.contentWindow.document.body.classList.add( 'appmsg_skin_default', 'appmsg_style_default', 'rich_media_empty_extra' );
 
 			// ADD CSS TO IFRAME HEAD
 			if ( !style ) {
@@ -308,12 +306,10 @@
 			// ARTICLE TOP META DATA
 			if ( content.accountName && ( !this.previous || this.previous.accountName !== content.accountName ) ) {
 
-				this.accountNameSpan.innerHTML = content.accountName;
 				this.accountNameEl.innerHTML = content.accountName;
 
 			} else if ( !content.accountName ) {
 
-				this.accountNameSpan.innerHTML = '账户名称';
 				this.accountNameEl.innerHTML = '账户名称';
 
 			}
@@ -332,9 +328,9 @@
 
 			// LIKES
 			if ( content.pageLikes && ( !this.previous || this.previous.pageLikes !== content.pageLikes ) )
-				this.articleLikes.innerHTML = content.pageLikes;
+				this.articleLikesNum.innerHTML = content.pageLikes;
 
-			else if ( !content.pageLikes ) this.articleLikes.innerHTML = 0;
+			else if ( !content.pageLikes ) this.articleLikesNum.innerHTML = '赞';
 
 			// READ MORE
 			if ( content.readMore ) {
@@ -348,20 +344,13 @@
 
 			} else this.readMoreEl.innerHTML = '';
 
-			if ( !this.articleReport.innerHTML ) this.articleReport.innerHTML = '举报';
-
 			// FORMAT DATE
 			// =========================================================================================================
 			var date = ( typeof content.articleTime === 'number' ? new Date( Number( content.articleTime ) ) : new Date( Date.now() ) ),
 				day = date.getDate(),
-				month = date.getMonth() + 1,
-				year = date.getFullYear();
+				month = date.getMonth() + 1;
 
-			if ( day <= 9 ) day = '0' + day;
-
-			if ( month <= 9 ) month = '0' + month;
-
-			content.articleTime = year + '-' + month + '-' + day;
+			content.articleTime = month + '月' + day + '日';
 
 			this.articleDateEl.innerHTML = content.articleTime;
 
