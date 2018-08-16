@@ -45,15 +45,15 @@
 		var normalized = string.toLowerCase().replace(/ /g,'');
 
 		return normalized;
+	}
 
-	};
 
 	// EXTEND JAVASCRIPT OBJECT
-	// =================================================================================================================
+	// =============================================================================================
 	function extend ( defaults, options ) {
 
-		var extended = {};
-		var prop;
+		var extended = {},
+			prop;
 
 		for (prop in defaults) {
 			if (Object.prototype.hasOwnProperty.call(defaults, prop)) extended[prop] = defaults[prop];
@@ -65,10 +65,11 @@
 
 		return extended;
 
-	};
+	}
+
 
 	// DECLARE CREATE ELEMENT FUNCTION
-	// =================================================================================================================
+	// =============================================================================================
 	function createElement ( element, className, target ) {
 
 		element = document.createElement( element );
@@ -104,8 +105,9 @@
 		this.cssFilePath = options.cssFilePath;
 		this.cssText = options.cssText;
 
+
 		// IF CONTAINER IS AN OBJECT > OBJECT VALUES MUST BE HEIGHT AND WIDTH
-		// =============================================================================================================
+		// =========================================================================================
 		if ( typeof options.container === 'object' && options.container.width && options.container.height ) {
 
 			if ( typeof options.container.width === 'number' && typeof options.container.height === 'number' ) {
@@ -120,8 +122,9 @@
 
 		}
 
+
 		// IF CONTAINER IS AN STRING > SET HEIGHT AND WIDTH ACCORDING TO WHITELIST SIZES
-		// =============================================================================================================
+		// =========================================================================================
 		else if ( typeof options.container === 'string' ) {
 
 			for ( var prop in sizes ) {
@@ -137,8 +140,9 @@
 
 		} else throw new TypeError( 'Container object contains invalid values' );
 
+
 		// GENERATE MAIN BODY WRAPPERS
-		// =============================================================================================================
+		// =========================================================================================
 		this.mainWrapper = createElement( 'div', 'rich_media_inner' );
 
 		// PAGE CONTENT
@@ -206,10 +210,11 @@
 
 		}
 
-		this.el.addEventListener( 'load', function ( e ) {
+		this.el.addEventListener( 'load', function () {
+
 
 			// CREATE IFRAME BODY FIRST TIME GENERATE IS RUN
-			// =========================================================================================================
+			// =====================================================================================
 			if ( !( $this.previous ) ) {
 
 				$this.el.contentWindow.document.open();
@@ -254,10 +259,14 @@
 				head.appendChild( style );
 			}
 
+			$this.updateVideoDimensions();
+
 			$this.updateHeight();
 
 		});
 
+
+		// =========================================================================================
 		this.generate = function ( content ) {
 
 			// IF NO PREVIOUS VALUES ARE SET › SET DEFAULTS › OVERRIDE WITH USER SET VALUES
@@ -297,7 +306,7 @@
 
 
 			// SET CONTENT OF MAIN ELEMENTS
-			// =========================================================================================================
+			// =====================================================================================
 			if ( content.articleTitle && ( !this.previous || this.previous.articleTitle !== content.articleTitle ) )
 				this.articleTitleEl.innerHTML = content.articleTitle;
 
@@ -344,8 +353,9 @@
 
 			} else this.readMoreEl.innerHTML = '';
 
+
 			// FORMAT DATE
-			// =========================================================================================================
+			// =====================================================================================
 			var date = ( typeof content.articleTime === 'number' ? new Date( Number( content.articleTime ) ) : new Date( Date.now() ) ),
 				day = date.getDate(),
 				month = date.getMonth() + 1;
@@ -359,8 +369,9 @@
 
 		this.formatContent = function() {
 
+
 			// FORMAT VIDEO IFRAMES
-			// =========================================================================================================
+			// =====================================================================================
 			var videoIframe = this.contentWrapper.getElementsByClassName( 'video_iframe' );
 
 			for ( var i = 0; i < videoIframe.length; i++ ) {
@@ -381,8 +392,9 @@
 
 			}
 
+
 			// SET SOURCES FOR IMAGES AND YOUKU LINKS
-			// =========================================================================================================
+			// =====================================================================================
 			var dataSrcElements = this.contentWrapper.querySelectorAll( '[data-src]' );
 
 			for ( var i = 0; i < dataSrcElements.length; i++ ) {
@@ -400,8 +412,9 @@
 
 			}
 
+
 			// UPDATE DATA-HEIGHT ON IMAGE LOAD
-			// =========================================================================================================
+			// =====================================================================================
 			var imageElements = this.contentWrapper.querySelectorAll( 'img' ),
 				imageLoadCount = 0;
 
@@ -433,8 +446,9 @@
 					$this.updateHeight();
 			});
 
+
 			// DISPLAY ERROR FOR POLL IFRAMES
-			// =========================================================================================================
+			// =====================================================================================
 			var polls = this.contentWrapper.getElementsByClassName( 'vote_iframe' );
 
 			for ( var i = 0; i < polls.length; i++ ) {
@@ -497,7 +511,24 @@
 		};
 
 
-		// =============================================================================================================
+		// =========================================================================================
+		this.updateVideoDimensions = function() {
+
+			var videoIframes = this.contentWrapper.getElementsByClassName( 'iframe-video' );
+
+			for ( var i = 0; i < videoIframes.length; i++ ) {
+
+				var aspectRatio = Number( videoIframes[ i ].dataset.ratio ),
+					width = Number( videoIframes[ i ].parentNode.getBoundingClientRect().width ),
+					height = width / aspectRatio;
+
+				videoIframes[ i ].width = width;
+				videoIframes[ i ].height = height;
+			}
+		};
+
+
+		// =========================================================================================
 		this.updateHeight = function() {
 
 			var event;
@@ -543,5 +574,4 @@
 	}
 
 	return articlePreview;
-
 }));
