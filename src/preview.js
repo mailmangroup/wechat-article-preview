@@ -1,7 +1,7 @@
 /*
  * WeChat Article Preview
  * Author: Fergus Jordan
- * Version: 1.0.17
+ * Version: 1.0.18
  *
  * Real-time preview of articles in WeChat's phone browser
  */

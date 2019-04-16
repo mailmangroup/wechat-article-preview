@@ -1,6 +1,6 @@
 {
   "name": "wechat-article-preview",
-  "version": "1.0.16",
+  "version": "1.0.18",
   "main": "gulpfile.js",
   "dependencies": {
     "gulp": "^3.9.1",
