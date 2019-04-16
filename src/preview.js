@@ -347,7 +347,8 @@
 				this.readMoreEl.innerHTML = '阅读原文';
 				this.readMoreEl.setAttribute( 'target', '_blank' );
 
-				if ( /^(http:\/\/){1,7}\S+/.test( content.readMore ) === false ) content.readMore = 'http://' + content.readMore;
+				// ADD HTTP IF NEEDED
+				if ( !/^(http|https):\/\//.test( content.readMore ) ) content.readMore = 'http://' + content.readMore;
 
 				this.readMoreEl.setAttribute( 'href', content.readMore );
 
