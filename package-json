@@ -1,0 +1,16 @@
+{
+  "name": "wechat-article-preview",
+  "version": "1.0.0",
+  "main": "dist/preview.js",
+  "license": "MIT",
+  "ignore": [
+    ".bowerrc",
+    ".gitignore",
+    ".gitattributes",
+    ".git/*",
+    "node_modules",
+    "bower.json",
+    "**/*.html",
+    "gulpfile.js"
+  ]
+}
