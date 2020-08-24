@@ -1,8 +1,7 @@
 'use strict';
 
 var gulp = require( 'gulp' ),
-	del = require( 'del' ),
-	minifyCSS = require( 'gulp-minify-css' ),
+	cleanCSS = require( 'gulp-clean-css' ),
 	replace = require( 'gulp-replace' ),
 	uglify = require( 'gulp-uglify' );
 
@@ -22,7 +21,7 @@ gulp.task( 'copy', function() {
 gulp.task( 'minify-css', [ 'copy' ], function() {
 
 	return gulp.src( 'dist/*.css' )
-		.pipe( minifyCSS({
+		.pipe( cleanCSS({
 			debug: true
 		}) )
 		.pipe( gulp.dest( 'dist/' ) );
