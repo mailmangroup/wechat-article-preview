@@ -1,8 +1,8 @@
 {
   "name": "wechat-article-preview",
   "version": "1.0.18",
-  "main": "gulpfile.js",
-  "devDependencies": {
+  "main": "dist/preview.js",
+  "dependencies": {
     "gulp": "^3.6.0",
     "gulp-clean-css": "^4.3.0",
     "gulp-replace": "^1.0.0",
